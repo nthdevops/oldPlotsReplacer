@@ -22,7 +22,7 @@ def runApp():
 
 def killer(process_name):
     try:
-        os.system("taskkill /im "+process_name+".exe > tmpTaskKill 2> output.err & timeout 2 & del tmpTaskKill & del output.err")
+        os.system("taskkill /im "+process_name+".exe")
     except:
         pass
     else:
@@ -69,5 +69,5 @@ if __name__ == "__main__":
                         fileDelete = plotsList[0]
                         os.remove(deletePath+"/"+fileDelete)
                 db.remove(searchDb.id == path["id"])
-            hpoolControl = hpoolStart(hpoolControl)
+            hpoolControl = hpoolStart()
         time.sleep(2)
