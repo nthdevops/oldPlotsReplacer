@@ -58,7 +58,7 @@ if __name__ == "__main__":
     while True:
         dbitens = db.all()
         if len(dbitens) > 0:
-            print("Deleting", dbitens)
+            print("\nDeletando:", dbitens)
             hpoolFinish(hpoolControl)
             time.sleep(2)
             for path in dbitens:
@@ -66,8 +66,9 @@ if __name__ == "__main__":
                 if os.path.exists(deletePath):
                     plotsList = getPlotFiles(deletePath)
                     if len(plotsList) > 0:
-                        fileDelete = plotsList[0]
-                        os.remove(deletePath+"/"+fileDelete)
-                db.remove(searchDb.id == path["id"])
+                        fileDelete = deletePath+"/"+plotsList[0]
+                        os.remove(fileDelete)
+                        print("Para o item:", path, "\nDeletou:", fileDelete)
+                        db.remove(searchDb.id == path["id"])
             hpoolControl = hpoolStart()
         time.sleep(2)
