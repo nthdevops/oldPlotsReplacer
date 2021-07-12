@@ -7,7 +7,7 @@ db = TinyDB('db.json')
 conf = jsonConf.getConf('conf.json')
 searchDb = Query()
 totalRequest = 0
-hpoolPath = conf.hpoolControl.path
+hpoolPath = "\""+conf.hpoolControl.path+"/hpool-miner-chia-gui.exe"+"\""
 
 @app.route('/addPlotToDelete', methods=["POST"])
 def addToPlotsDelete():
