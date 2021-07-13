@@ -4,3 +4,4 @@ test*
 *.spec
 *pycache*
 *.json
+*.zip
