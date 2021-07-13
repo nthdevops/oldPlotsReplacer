@@ -1,5 +1,6 @@
 import time, multiprocessing, subprocess, os, jsonConf
 from tinydb import *
+from sys import exit
 
 from flask import Flask, request
 app = Flask(__name__)
