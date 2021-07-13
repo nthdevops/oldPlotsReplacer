@@ -49,6 +49,9 @@ def getPlotFiles(plotsPath):
     plotsList = [f for f in os.listdir(plotsPath) if len(f.split('.plot')) == 2]
     return plotsList
 
+def deleteDbItem(db, dbItem):
+    db.remove(searchDb.id == dbItem["id"])
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
     p = multiprocessing.Process(target=runApp)
@@ -61,14 +64,22 @@ if __name__ == "__main__":
             print("\nDeletando:", dbitens)
             hpoolFinish(hpoolControl)
             time.sleep(2)
-            for path in dbitens:
-                deletePath = path["deletePath"]
+            for pathItem in dbitens:
+                deletePath = pathItem["deletePath"]
                 if os.path.exists(deletePath):
                     plotsList = getPlotFiles(deletePath)
                     if len(plotsList) > 0:
                         fileDelete = deletePath+"/"+plotsList[0]
-                        os.remove(fileDelete)
-                        print("Para o item:", path, "\nDeletou:", fileDelete)
-                        db.remove(searchDb.id == path["id"])
+                        try:
+                            os.remove(fileDelete)
+                        except Exception as e:
+                            print("Nao foi possivel deletar o arquivo:", fileDelete, "\n\nA seguinte excecao aconteceu:\n", e)
+                        else:
+                            print("Para o item:", pathItem, "\nDeletou:", fileDelete)
+                    else:
+                        print("Para o item:", pathItem, "\nNao foi necessario deletar, diretorio nao tem plots")
+                else:
+                    print("Nao foi encontrado o diretorio:", deletePath, "para deletar!")
+                deleteDbItem(db, pathItem)
             hpoolControl = hpoolStart()
         time.sleep(2)
