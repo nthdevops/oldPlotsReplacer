@@ -1,4 +1,4 @@
-import time, multiprocessing, subprocess, os, jsonConf, atexit
+import time, multiprocessing, subprocess, os, jsonConf
 from tinydb import *
 
 from flask import Flask, request
@@ -8,6 +8,12 @@ conf = jsonConf.getConf('conf.json')
 searchDb = Query()
 totalRequest = 0
 hpoolPath = "\""+conf.hpoolControl.path+"/hpool-miner-chia-gui.exe"+"\""
+
+#Checka se o diretorio do HPOOL existe
+if conf.hpoolControl.enabled:
+    if not os.path.exists(conf.hpoolControl.path):
+        print("\nNao foi possivel encontrar o diretorio do HPOLL\nVerifique se o arquivo de configuracao esta correto!\n")
+        exit()
 
 @app.route('/addPlotToDelete', methods=["POST"])
 def addToPlotsDelete():
