@@ -2,5 +2,7 @@
     "hpoolControl": {
         "enabled": true,
         "path": "Caminho para o arquivo da pasta do Hpool"
-    }
+    },
+    "logsPath": "Caminho para o log terminando com \\",
+    "loglevel": "info" ou "debug"
 }
