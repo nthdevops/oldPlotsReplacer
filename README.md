@@ -93,3 +93,8 @@
 #
 ### Veja também:
 - [Gerenciador customizado do plotter madMax](https://github.com/nthdevops/ChiaMadMaxPlotterPy)
+#
+##### Donate XCH: xch1dp7urpgy6uafhxnt305pj8hq2nqkdasycgrmnmwwtnc2542lnrvsdanazj
+#
+### Faça download:
+- [Releases](https://github.com/nthdevops/oldPlotsReplacer/releases)
