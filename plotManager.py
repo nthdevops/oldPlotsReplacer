@@ -1,6 +1,5 @@
-from logging import log
 import time, multiprocessing, subprocess, os, jsonConf, psutil
-from sys import executable, exit
+from sys import exit
 from customLogs import CustomLog
 
 conf = jsonConf.getConf('conf.json')
@@ -123,6 +122,7 @@ while True:
             if len(nftPlotsList) == maxPlots and len(oldPlotsList) == 0:
                 logger.debug("Todos os plots sao NFT para o controlPath:\n", controlPath)
                 controlPaths.remove(controlPath)
+                logger.info("Tudo certo! Script validando plots..")
                 continue
             #A partir da lista de plots nft e antigos, soma os valor e subtrai do maximo para validar se passou o total de plots
             difPlotsToMax = (len(nftPlotsList) + len(oldPlotsList)) - maxPlots
