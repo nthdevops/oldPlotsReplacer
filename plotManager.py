@@ -1,6 +1,13 @@
-import time, multiprocessing, subprocess, os, jsonConf, psutil
+import time, multiprocessing, subprocess, os, jsonConf, psutil, atexit
 from sys import exit
 from customLogs import CustomLog
+
+def finishFunc():
+    logger.info("Programa finalizado!\nBye Bye :)\n")
+    input("Pressione 'Enter' para sair...")
+
+#Funcoes em caso de abortar o programa
+atexit.register(finishFunc)
 
 conf = jsonConf.getConf('conf.json')
 processControlEnabled = conf.processShutControl.enabled
@@ -98,59 +105,65 @@ def checkAllConfPaths():
                     pathErrorExit(path)
     logger.info("Diretorios validados!")
 
-#Antes de iniciar a execucao valida diretorios
-checkAllConfPaths()
-#Habilita o freeze_support para execucao de binarios
-multiprocessing.freeze_support()
-#Toma o controle da execucao do processo configurado
-processExecution = processFirstStart()
+#Contorno de saidas
+try:
+    #Antes de iniciar a execucao valida diretorios
+    checkAllConfPaths()
+    #Habilita o freeze_support para execucao de binarios
+    multiprocessing.freeze_support()
+    #Toma o controle da execucao do processo configurado
+    processExecution = processFirstStart()
 
-logger.info("Tudo certo! Script validando plots..")
+    logger.info("Tudo certo! Script validando plots..")
 
-#Inicia o loop infinito para validacao de plots
-while True:
-    if len(controlPaths) > 0:
-        #Variavel para validar se o processo foi finalizado e se sera necessario inicia-lo novamente
-        startProcessAgain = False
-        for controlPath in controlPaths:
-            nftPlotsPath = controlPath["nftPlotsPath"]
-            oldPlotsPath = controlPath["oldPlotsPath"]
-            maxPlots = controlPath["maxPlots"]
-            nftPlotsList = getPlotAndTmpPlot(nftPlotsPath)
-            oldPlotsList = getPlotFiles(oldPlotsPath)
-            #Se todos os plots comparados ao maximo forem NFT e nao existirem plots antigos, remove o elemento de configuracao
-            if len(nftPlotsList) == maxPlots and len(oldPlotsList) == 0:
-                logger.info("Todos os plots sao NFT para o controlPath:\n", controlPath)
-                controlPaths.remove(controlPath)
+    #Inicia o loop infinito para validacao de plots
+    while True:
+        if len(controlPaths) > 0:
+            #Variavel para validar se o processo foi finalizado e se sera necessario inicia-lo novamente
+            startProcessAgain = False
+            for controlPath in controlPaths:
+                nftPlotsPath = controlPath["nftPlotsPath"]
+                oldPlotsPath = controlPath["oldPlotsPath"]
+                maxPlots = controlPath["maxPlots"]
+                nftPlotsList = getPlotAndTmpPlot(nftPlotsPath)
+                oldPlotsList = getPlotFiles(oldPlotsPath)
+                #Se todos os plots comparados ao maximo forem NFT e nao existirem plots antigos, remove o elemento de configuracao
+                if len(nftPlotsList) == maxPlots and len(oldPlotsList) == 0:
+                    logger.info("Todos os plots sao NFT para o controlPath:\n", controlPath)
+                    controlPaths.remove(controlPath)
+                    logger.info("Tudo certo! Script validando plots..")
+                    continue
+                #A partir da lista de plots nft e antigos, soma os valor e subtrai do maximo para validar se passou o total de plots
+                difPlotsToMax = (len(nftPlotsList) + len(oldPlotsList)) - maxPlots
+                #Se o total estiver acima do esperado, deleta a quantidade plots antigos necessaria
+                if difPlotsToMax > 0:
+                    logger.info("Novos plots foram detectados, ira deletar plots antigos!")
+                    #Finaliza a execucao do processo configurado
+                    if not startProcessAgain:
+                        processFinish(processExecution)
+                        startProcessAgain = True
+                        time.sleep(3)
+                    #Itera sobre a quantidade de plots que estao a mais do maximo
+                    for idx in range(difPlotsToMax):
+                        #Atribui a variavel plotToRemove o path de delecao de um plot antigo
+                        plotToRemove = oldPlotsPath+oldPlotsList[idx]
+                        logger.info("Deletando plot:", plotToRemove)
+                        try:
+                            #Deleta o plot antigo configurado
+                            os.remove(plotToRemove)
+                        except Exception as e:
+                            logger.error("Nao foi possivel deletar o plot:", plotToRemove, "\nA seguinte excecao aconteceu:\n", e)
+                        else:
+                            logger.info("Deletou o plot:", plotToRemove)
+            #Inicia novamente a execucao do processo se necessario
+            if startProcessAgain:
+                processExecution = processStart()
                 logger.info("Tudo certo! Script validando plots..")
-                continue
-            #A partir da lista de plots nft e antigos, soma os valor e subtrai do maximo para validar se passou o total de plots
-            difPlotsToMax = (len(nftPlotsList) + len(oldPlotsList)) - maxPlots
-            #Se o total estiver acima do esperado, deleta a quantidade plots antigos necessaria
-            if difPlotsToMax > 0:
-                logger.info("Novos plots foram detectados, ira deletar plots antigos!")
-                #Finaliza a execucao do processo configurado
-                if not startProcessAgain:
-                    processFinish(processExecution)
-                    startProcessAgain = True
-                    time.sleep(3)
-                #Itera sobre a quantidade de plots que estao a mais do maximo
-                for idx in range(difPlotsToMax):
-                    #Atribui a variavel plotToRemove o path de delecao de um plot antigo
-                    plotToRemove = oldPlotsPath+oldPlotsList[idx]
-                    logger.info("Deletando plot:", plotToRemove)
-                    try:
-                        #Deleta o plot antigo configurado
-                        os.remove(plotToRemove)
-                    except Exception as e:
-                        logger.error("Nao foi possivel deletar o plot:", plotToRemove, "\nA seguinte excecao aconteceu:\n", e)
-                    else:
-                        logger.info("Deletou o plot:", plotToRemove)
-        #Inicia novamente a execucao do processo se necessario
-        if startProcessAgain:
-            processExecution = processStart()
-            logger.info("Tudo certo! Script validando plots..")
-    else:
-        logger.info("Todos os diretorios foram validados e so existem plots NFT")
-        exit()
-    time.sleep(1)
+        else:
+            logger.info("Todos os diretorios foram validados e so existem plots NFT")
+            exit()
+        time.sleep(10)
+except KeyboardInterrupt:
+    pass
+except Exception as e:
+    logger.error("Erro durante a execucao! | Exception:\n", e)
