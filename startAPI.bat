@@ -1,3 +1,3 @@
 pushd %~dp0
-runManager.exe
+runPlotManager.exe
 PAUSE
