@@ -1,6 +1,7 @@
 import time, multiprocessing, subprocess, os, jsonConf, psutil, atexit
-from sys import exit
 from customLogs import CustomLog
+
+conf = jsonConf.getConf('conf.json')
 
 def finishFunc():
     logger.info("Programa finalizado!\nBye Bye :)\n")
@@ -9,7 +10,6 @@ def finishFunc():
 #Funcoes em caso de abortar o programa
 atexit.register(finishFunc)
 
-conf = jsonConf.getConf('conf.json')
 processControlEnabled = conf.processShutControl.enabled
 executableName = conf.processShutControl.executableName
 processControlPath = conf.processShutControl.path+executableName
