@@ -120,7 +120,7 @@ while True:
             oldPlotsList = getPlotFiles(oldPlotsPath)
             #Se todos os plots comparados ao maximo forem NFT e nao existirem plots antigos, remove o elemento de configuracao
             if len(nftPlotsList) == maxPlots and len(oldPlotsList) == 0:
-                logger.debug("Todos os plots sao NFT para o controlPath:\n", controlPath)
+                logger.info("Todos os plots sao NFT para o controlPath:\n", controlPath)
                 controlPaths.remove(controlPath)
                 logger.info("Tudo certo! Script validando plots..")
                 continue
