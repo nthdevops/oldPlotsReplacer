@@ -9,19 +9,22 @@ class CustomLog:
                 os.remove(logPath)
             except:
                 pass
-        self.logger = logging.getLogger(logname)
-        loglevel = getattr(logging, conf.loglevel.upper())
-        formatterLog = logging.Formatter('\n%(asctime)s - %(levelname)s: %(message)s', datefmt="%d-%m-%Y %H:%M:%S")
-        formatterConsole = logging.Formatter('\n%(asctime)s: %(message)s', datefmt="%d-%m-%Y %H:%M:%S")
-        log_handler = logging.FileHandler(logPath, encoding='utf-8-sig')
-        log_handler.setFormatter(formatterLog)
-        log_handler.setLevel(loglevel)
-        console = logging.StreamHandler()
-        console.setLevel(logging.INFO)
-        console.setFormatter(formatterConsole)
-        self.logger.addHandler(log_handler)
-        self.logger.addHandler(console)
-        self.logger.setLevel(loglevel)
+        try:
+            self.logger = logging.getLogger(logname)
+            loglevel = getattr(logging, conf.loglevel.upper())
+            formatterLog = logging.Formatter('\n%(asctime)s - %(levelname)s: %(message)s', datefmt="%d-%m-%Y %H:%M:%S")
+            formatterConsole = logging.Formatter('\n%(asctime)s: %(message)s', datefmt="%d-%m-%Y %H:%M:%S")
+            log_handler = logging.FileHandler(logPath, encoding='utf-8-sig')
+            log_handler.setFormatter(formatterLog)
+            log_handler.setLevel(loglevel)
+            console = logging.StreamHandler()
+            console.setLevel(logging.INFO)
+            console.setFormatter(formatterConsole)
+            self.logger.addHandler(log_handler)
+            self.logger.addHandler(console)
+            self.logger.setLevel(loglevel)
+        except Exception as e:
+            print("Nao conseguiu criar o logger | Exception:\n", e)
 
     def strListFromArgs(self, args):
         compiledStr = str(args[0])

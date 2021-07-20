@@ -1,8 +1,16 @@
 {
-    "hpoolControl": {
+    "logsPath": "Caminho para o log terminando com / ou \\",
+    "loglevel": "info" ou "debug",
+    "processShutControl": {
         "enabled": true,
-        "path": "Caminho para o arquivo da pasta do Hpool"
+        "path": "Caminho para o executavel do processo terminado com / ou \\",
+        "executableName": "hpool-miner-chia-gui.exe" ou o nome do executavel que precisar ser fechado antes de deletar os plots
     },
-    "logsPath": "Caminho para o log terminando com \\",
-    "loglevel": "info" ou "debug"
+    "controlPaths": [
+        {
+            "nftPlotsPath": "Path dos plots NFT terminado com / ou \\",
+            "oldPlotsPath": "Path dos plots antigos terminado com / ou \\",
+            "maxPlots": Numero maximo de plots que podem existir, somando os plots antigos com os NFT, sera o numero usado para validar se um plot antigo precisa ser deletado (Colocar o numero sem aspas, exemplo: 10)
+        }
+    ]
 }
